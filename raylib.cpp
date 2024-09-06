@@ -77,39 +77,54 @@ class Food{
       return Vector2{x, y};
     }
 };
+
+class Game{
+  public:
+    Snake snake = Snake();
+    Food food = Food();
+
+    void Draw(){
+      food.Draw();
+      snake.Draw();
+    }
+
+    void Update(){
+      snake.Update();
+    }
+
+};
+
 int main() {
 
   cout << "Starting the game..." << endl;
   InitWindow(cellSize*cellCount, cellSize*cellCount, "Retro Snake");
   SetTargetFPS(60); 
 
-  Food food;
-  Snake snake;
+  Game game = Game();
 
   while(WindowShouldClose() == false){
     BeginDrawing();
 
     if(eventTriggered(0.2)){
-      snake.Update();
+      game.Update();
     }
 
-    if(IsKeyPressed(KEY_UP) && snake.direction.y != 1){
-      snake.direction = {0, -1}; // x remains same and y gets decremented as the coordinate system being used here is the 'Top-Left
+    if(IsKeyPressed(KEY_UP) && game.snake.direction.y != 1){
+      game.snake.direction = {0, -1}; // x remains same and y gets decremented as the coordinate system being used here is the 'Top-Left
     }
-    if(IsKeyPressed(KEY_DOWN) && snake.direction.y != -1){
-      snake.direction = {0, 1}; // x remains same and y gets incremented
+    if(IsKeyPressed(KEY_DOWN) && game.snake.direction.y != -1){
+      game.snake.direction = {0, 1}; // x remains same and y gets incremented
     }
-    if(IsKeyPressed(KEY_LEFT) && snake.direction.x != 1){
-      snake.direction = {-1, 0}; // x = -1 and y remains same
+    if(IsKeyPressed(KEY_LEFT) && game.snake.direction.x != 1){
+      game.snake.direction = {-1, 0}; // x = -1 and y remains same
     }
-    if(IsKeyPressed(KEY_RIGHT) && snake.direction.x != -1){
-      snake.direction = {1, 0}; // x = 1 and y remains same
+    if(IsKeyPressed(KEY_RIGHT) && game.snake.direction.x != -1){
+      game.snake.direction = {1, 0}; // x = 1 and y remains same
     }
 
     // Drawing
     ClearBackground(green);
-    food.Draw();
-    snake.Draw();
+    game.Draw();
 
     EndDrawing();
   }
