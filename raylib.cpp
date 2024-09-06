@@ -13,6 +13,14 @@ int cellCount = 25;
 
 double lastUpdateTime = 0;
 
+bool ElementInDeque(Vector2 element, deque<Vector2> body){
+  for(unsigned int i = 0; i < body.size(); i++){
+    if(Vector2Equals(body[i], element))
+      return true;
+  }
+  return false;
+}
+
 bool eventTriggered(double interval){
   double currentTime = GetTime();
 
@@ -50,11 +58,11 @@ class Food{
     Vector2 position; // this doesn't represent the pixels but cell, so {5, 6} is 6th column and 7th row
     Texture2D texture;
 
-    Food(){
+    Food(deque<Vector2> snakeBody){
       Image image = LoadImage("Graphics/apple.png");
       texture = LoadTextureFromImage(image);
       UnloadImage(image);
-      position = GenerateRandomPos(); // generate a random position for the food
+      position = GenerateRandomPos(snakeBody); // generate a random position for the food
     }
 
     ~Food(){
@@ -70,18 +78,28 @@ class Food{
 
     }
 
-    Vector2 GenerateRandomPos(){
+    Vector2 GenerateRandomCell(){
       float x = GetRandomValue(0, cellCount - 1);
       float y = GetRandomValue(0, cellCount - 1);
+      Vector2 position = {x, y};
 
-      return Vector2{x, y};
+      return position;
+    }
+
+    Vector2 GenerateRandomPos(deque<Vector2> snakeBody){
+      Vector2 position = GenerateRandomCell();
+
+      while(ElementInDeque(position, snakeBody))
+        position = GenerateRandomCell();
+
+      return position;
     }
 };
 
 class Game{
   public:
     Snake snake = Snake();
-    Food food = Food();
+    Food food = Food(snake.body);
 
     void Draw(){
       food.Draw();
@@ -90,6 +108,13 @@ class Game{
 
     void Update(){
       snake.Update();
+      CheckCollisionWithFood();
+    }
+
+    void CheckCollisionWithFood(){
+      if(Vector2Equals(snake.body[0], food.position)){
+        food.position = food.GenerateRandomPos(snake.body);
+      }
     }
 
 };
